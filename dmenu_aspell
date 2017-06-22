@@ -1,0 +1,39 @@
+#!/bin/bash bash
+# dmenu_aspell
+#  Fix spelling of xclip contents using aspell via dmenu.
+
+# colors
+IFS=':' read nb nf sb sf <<< "dark green:white:dark green:yellow"
+
+# get input from xclip ( or elsewhere? )
+text=$(xclip -o)
+
+# get aspell results for current xclip selection
+errs=$(echo "$text" | aspell pipe | sed -n '/&/{ s/^& //; s/://; p;}')
+
+# nothing to do without errs
+if [ -z "$errs" ]; then exit 0; fi
+
+# keep track of words visited already
+seen=""
+
+# read word, number of suggestions, position, and suggestions
+while read word num index sugs; do
+    
+    # skip if this word was seen already    
+    if grep -qw "$word" <<< "$seen"; then continue; fi	
+    seen+="$word "
+   
+    # prompt for suggested words
+    fix=$(echo "${sugs//, /$'\n'}" | dmenu -nb "$nb" -nf "$nf" -sb "$sb" -sf "$sf" -p "SPELL $word")
+    if [ $? != 0 ] || [ -z "$fix" ]; then continue; fi
+   
+    # replace word with fix in text
+    text=$(sed "s/$word/$fix/g" <<< "$text")
+    printf "%s -> %s\n" "$word" "$fix"
+    
+done <<< "$errs"
+
+# push result back into xclip
+printf "%s" "$text" | xclip -i
+if [ -z "$seen" ]; then echo "No spelling errors."; fi

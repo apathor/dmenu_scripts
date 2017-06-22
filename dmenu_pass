@@ -1,0 +1,29 @@
+#!//bin/bash
+# dmenu_pass
+#  Use dmenu to select a pass password to copy into xclip.
+
+# colors
+IFS=':' read nb nf sb sf <<< "black:green:dark green:white"
+
+# the password directory
+pdir=${PASSWORD_STORE_DIR-~/.password-store}
+
+# get list of files then strip the path and extensions
+shopt -s nullglob globstar
+files=( "$pdir"/**/*.gpg )
+files=( "${files[@]#"$pdir"/}" )
+files=( "${files[@]%.gpg}" )
+
+# call dmenu to select password. exit if that failed
+password=$(printf '%s\n' "${files[@]}" | \
+		  dmenu -p "PASS" -i -nb "$nb" -nf "$nf" -sb "$sb" -sf "$sf" "$@")
+if [[ $? -ne 0 || -z "$password" ]]; then exit 1; fi
+
+# lookup password onto clipboard
+pass show -c "$password" &>/dev/null
+if [ $? -eq 0 ]; then
+    printf "Copied password %s.\n" "$password"
+else
+    printf "Problem getting password %s.\n" "$password"
+    exit 1
+fi

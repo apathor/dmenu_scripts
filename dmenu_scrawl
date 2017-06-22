@@ -1,0 +1,25 @@
+#!/bin/bash bash
+# dmenu_scrawl
+#  Expose the clipboard to scrawl with dmenu.
+
+# colors
+IFS=':' read nb nf sb sf <<< "blue:white:dark blue:yellow"
+
+# pick from current clipboard contents
+declare menu entry inp sel pre
+for sel in primary secondary clipboard; do
+    inp="$(xclip -o -selection "$sel" 2>/dev/null)"    
+    pre="$(printf "%s\n" "$inp" | sed 's/\\/\\\\/g; y/\r\n\t/   /;' | tr '\n' ' ')";
+    menu+="$(printf "%s %s" "${sel^^*}" "$pre")\n"
+done
+pick="$(printf "$menu" | dmenu -nb "$nb" -nf "$nf" -sb "$sb" -sf "$sf" -l 3 -i | cut -d' ' -f1)"
+if [ -n "$pick" ]; then    
+     xclip -o -selection "$pick" | scrawl -Axu
+fi
+
+# pick a scrawl entry to be loaded onto the selection
+entry=$(scrawl -w 500 -Lx | dmenu -nb "$nb" -nf "$nf" -sb "$sb" -sf "$sf" -l 30)
+read ind rest <<< "$entry"
+scrawl -Gx "${ind###}" 2>/dev/null | xclip -i -selection "$pick"
+
+

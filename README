@@ -1,0 +1,7 @@
+# dmenu_scripts
+
+Hey! This repository contains some [bash](https://www.gnu.org/software/bash/) scripts that use [dmenu](http://tools.suckless.org/dmenu/).
+These scripts are intended to be bound to keys by a window manager so they do not accept arguments.
+
+# License
+GPLv3 (see LICENSE)

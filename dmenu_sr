@@ -1,0 +1,18 @@
+#!/bin/bash bash
+# dmenu_sr
+
+# colors
+IFS=':' read nb nf sb sf <<< "black:white:white:black"
+
+# list subcommand
+list=$(sr -elvi | awk 'NR > 1 { print $1 }' ) # sed -r '1d;s/\t+/ /')
+
+# prompt for subcommand
+read elvi query < \
+     <(dmenu -p "SR" -i -nb "$nb" -nf "$nf" -sb "$sb" -sf "$sf" <<< "$list")
+
+# validate
+[ -n "$elvi" ] || exit 1
+
+# run it!
+sr "$elvi" "$query"

@@ -1,0 +1,11 @@
+#!/bin/bash
+# dmenu_tmux - dmenu selection of tmux sessions
+
+# virtual 
+
+# select a session
+list=$(tmux list-sessions | dmenu)
+sess=$(awk -F: '{print $1}' <<< "$list")
+
+# launch an xterm loading the tmux session
+xterm -e tmux attach-session -t "$sess" 

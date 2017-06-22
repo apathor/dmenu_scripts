@@ -1,0 +1,15 @@
+#!/bin/bash bash
+# dmenu_man - dmenu selection of manual pages
+
+# set the colors
+IFS=':' read nb nf sb sf <<< "black:white:yellow:black"
+
+# get list of manuals
+list=$(man -k .)
+
+# call dmenu to select manual
+manual=$(dmenu -l 30 -i -nb "$nb" -nf "$nf" -sb "$sb" -sf "$sf" <<< "$list" | awk '{print $1}')
+
+# render manual in browser
+man --html "$manual"
+

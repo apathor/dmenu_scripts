@@ -1,0 +1,17 @@
+#!/bin/bash bash
+# dmenu_urifind - dmenu selection of URLs from xclip
+
+BROWSER="${BROWSER:-sensible-browser}"
+
+# colors
+IFS=':' read nb nf sb sf <<< "dark blue:white:darkblue:yellow"
+
+# get uris from the clipboard
+list=$(xclip -o | urifind -s | uniq)
+
+# call dmenu for selection
+pick=$(dmenu -p "URI" -l 30 -i -nb "$nb" -nf "$nf" -sb "$sb" -sf "$sf" <<< "$list")
+[ -z "$pick" ] && exit 1
+
+# launch with browser
+"$BROWSER" "$pick"

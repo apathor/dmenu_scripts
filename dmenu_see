@@ -1,0 +1,26 @@
+#!/bin/bash
+# dmenu_see
+#  Use dmenu to select a file and open it with run-mailcap.
+
+# colors
+IFS=':' read nb nf sb sf <<< "yellow:black:black:white"
+
+# setup a cache file for names of executables on the path
+cache="$HOME/.cache/$(basename $0)";
+mkdir -p "${cache%/*}"
+
+# check if cache is missing or expired
+if [ ! -e "$cache" ] || [[ $(($(date +%s) - $(date +%s -r "$cache"))) -gt 3600 ]]; then
+    # populate list
+    IFS=':' list=$(find "$HOME" -type f | tee "$cache")
+else
+    # load list from cache
+    list=$(cat "$cache")
+fi
+
+# prompt for selection (possibly gigantic, could be slow...)
+pick=$(dmenu -i -l 30 -nb "$nb" -nf "$nf" -sb "$sb" -sf "$sf" <<< "$list")
+
+# open it 
+see "$pick"
+

@@ -1,0 +1,28 @@
+#!/bin/bash
+# dmenu_pipe
+#  Use dmenu to select a program to pipe xclip through.
+
+# colors
+IFS=':' read nb nf sb sf <<< "white:black:black:white"
+ 
+# setup a cache file for names of executables on the path
+cache="$HOME/.cache/dmenu_pipe";
+mkdir -p "${cache%/*}"
+
+# check if cache is missing or expired
+if [ ! -e "$cache" ] || [[ $(($(date +%s) - $(date +%s -r "$cache"))) -gt 3600 ]]; then
+    # populate cache and list
+    IFS=: list=$(find $PATH -not -type d -perm /+x -exec basename {} \;| sort | tee "$cache")
+else
+    # load list from cache
+    list=$(cat "$cache")
+fi
+
+# select an executable with dmenu
+command=$(dmenu -p "PIPE" -i -nb "$nb" -nf "$nf" -sb "$sb" -sf "$sf" <<< "$list")
+
+# print the command 
+echo "$command"
+
+# then run xclip through it
+xclip -o | eval "$command" | xclip -i &
