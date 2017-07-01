@@ -6,24 +6,24 @@
 IFS=':' read nb nf sb sf <<< "black:green:dark green:white"
 
 # the password directory
-pdir=${PASSWORD_STORE_DIR-~/.password-store}
+pdir=${PASSWORD_STORE_DIR:-~/.password-store}
+pdir="${pdir%/}/"
 
-# get list of files then strip the path and extensions
-shopt -s nullglob globstar
-files=( "$pdir"/**/*.gpg )
-files=( "${files[@]#"$pdir"/}" )
-files=( "${files[@]%.gpg}" )
+# get list of files then strip the path and extension
+files=$(find "$pdir" -name *.gpg -type f | sed "s#\.gpg##; s#$pdir##")
 
-# call dmenu to select password. exit if that failed
-password=$(printf '%s\n' "${files[@]}" | \
-		  dmenu -p "PASS" -i -nb "$nb" -nf "$nf" -sb "$sb" -sf "$sf" "$@")
-if [[ $? -ne 0 || -z "$password" ]]; then exit 1; fi
+# call dmenu to select entry
+pick=$(dmenu -i -nb "$nb" -nf "$nf" -sb "$sb" -sf "$sf" -l 10 <<< "${files[@]}")
+pick=${pick%%$pdir}
+if [[ -z "$pick" ]]; then
+    echo "No entry selected." >&2
+    exit 1;
+fi
 
 # lookup password onto clipboard
-pass show -c "$password" &>/dev/null
-if [ $? -eq 0 ]; then
-    printf "Copied password %s.\n" "$password"
+if pass show -c "$pick"; then
+    printf "Copied pass entry %s.\n" "$pick" >&2
 else
-    printf "Problem getting password %s.\n" "$password"
+    printf "Problem getting pass entry %s.\n" "$pick" >&2
     exit 1
 fi
