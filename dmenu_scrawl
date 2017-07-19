@@ -1,4 +1,4 @@
-#!/bin/bash bash
+#!/bin/bash
 # dmenu_scrawl
 #  Expose the clipboard to scrawl with dmenu.
 

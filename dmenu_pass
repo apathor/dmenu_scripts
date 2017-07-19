@@ -14,7 +14,7 @@ files=$(find "$pdir" -name *.gpg -type f | sed "s#\.gpg##; s#$pdir##")
 
 # call dmenu to select entry
 pick=$(dmenu -i -nb "$nb" -nf "$nf" -sb "$sb" -sf "$sf" -l 10 <<< "${files[@]}")
-pick=${pick%%$pdir}
+pick="${pick%%$pdir}"
 if [[ -z "$pick" ]]; then
     echo "No entry selected." >&2
     exit 1;

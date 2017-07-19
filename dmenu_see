@@ -10,7 +10,7 @@ cache="$HOME/.cache/$(basename $0)";
 mkdir -p "${cache%/*}"
 
 # check if cache is missing or expired
-if [ ! -e "$cache" ] || [[ $(($(date +%s) - $(date +%s -r "$cache"))) -gt 3600 ]]; then
+if [ ! -e "$cache" ] || [[ $(($(date +%s) - $(date +%s -r "$cache"))) -gt 86400 ]]; then
     # populate list
     IFS=':' list=$(find "$HOME" -type f | tee "$cache")
 else

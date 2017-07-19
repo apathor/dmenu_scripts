@@ -1,4 +1,4 @@
-#!/bin/bash bash
+#!/bin/bash
 # dmenu_urifind - dmenu selection of URLs from xclip
 
 BROWSER="${BROWSER:-sensible-browser}"

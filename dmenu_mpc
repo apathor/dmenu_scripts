@@ -1,4 +1,4 @@
-#!/bin/bash bash
+#!/bin/bash
 # dmenu_mpc
 #  Play a song from the MPD playlist with dmenu.
 

@@ -1,4 +1,4 @@
-#!/bin/bash bash
+#!/bin/bash
 # dmenu_aspell
 #  Fix spelling of xclip contents using aspell via dmenu.
 
